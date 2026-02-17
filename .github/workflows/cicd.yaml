@@ -1,0 +1,19 @@
+# CI/CD Pipeline
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    uses: dmikalova/github-meta/.github/workflows/deno-cloudrun.yaml@main
+    permissions:
+      contents: write
+      id-token: write
+      packages: write
+    secrets: inherit

@@ -1,0 +1,8 @@
+{
+  "name": "login",
+  "entrypoint": "src/main.ts",
+  "runtime": {
+    "port": 8000,
+    "healthCheckPath": "/health"
+  }
+}

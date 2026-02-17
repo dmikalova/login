@@ -147,7 +147,7 @@ export async function handleCallback(c: Context) {
 /**
  * GET /logout - Clear session and redirect
  */
-export async function handleLogout(c: Context) {
+export function handleLogout(c: Context) {
   const domain = c.get("domain") as SupportedDomain;
 
   // Clear the session cookie

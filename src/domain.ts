@@ -46,6 +46,7 @@ export function getCookieDomain(hostname: string): string {
 /**
  * Extract domain from Host header and validate it.
  * Returns null if the domain is not supported.
+ * In development (localhost), defaults to mklv.tech for testing.
  */
 export function parseDomainFromHost(
   host: string | null,
@@ -54,6 +55,12 @@ export function parseDomainFromHost(
 
   // Remove port if present
   const hostname = host.split(":")[0];
+
+  // Allow localhost for local development - treat as mklv.tech
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "mklv.tech";
+  }
+
   const rootDomain = getRootDomain(hostname);
 
   if (SUPPORTED_DOMAINS.includes(rootDomain as SupportedDomain)) {
