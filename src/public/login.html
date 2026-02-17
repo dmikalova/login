@@ -240,3 +240,17 @@
             if (err) {
               console.error("OAuth error:", err);
               window.location.href = getErrorUrl("auth_failed");
+            }
+          };
+
+          return {
+            domain,
+            error,
+            loading,
+            signInWithGoogle,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

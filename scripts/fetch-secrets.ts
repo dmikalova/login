@@ -3,12 +3,8 @@
 /**
  * Fetch secrets from Google Secret Manager and export as environment variables
  *
- * Usage:
- *   eval $(deno task secrets)
- *   deno task dev
- *
- * Or combined:
- *   eval $(deno task secrets) && deno task dev
+ * Usage (run script directly to avoid deno task stdout noise):
+ *   eval $(deno run --allow-run --allow-env scripts/fetch-secrets.ts) && deno task dev
  *
  * Prerequisites:
  *   - gcloud CLI installed and authenticated
@@ -69,9 +65,9 @@ async function main() {
   }
 
   // Fetch all secrets and output as export statements
-  console.log("# Secrets from Google Secret Manager");
-  console.log(`# Project: ${PROJECT_ID}`);
-  console.log("");
+  // Meta info goes to stderr so eval only gets exports
+  console.error("# Secrets from Google Secret Manager");
+  console.error(`# Project: ${PROJECT_ID}`);
 
   for (const [envVar, secretName] of Object.entries(SECRETS)) {
     const value = await getSecret(secretName);
