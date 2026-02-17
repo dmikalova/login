@@ -9,8 +9,8 @@ import {
 
 export const routes = new Hono();
 
-// Login page
-routes.get("/login", handleLogin);
+// Login page at root (login.mklv.tech/)
+routes.get("/", handleLogin);
 
 // OAuth callback
 routes.get("/callback", handleCallback);

@@ -20,6 +20,8 @@
     "fmt": "deno fmt",
     // Lint TypeScript files
     "lint": "deno lint",
+    // Fetch secrets from Google Secret Manager (use with eval)
+    "secrets": "deno run --allow-run --allow-env scripts/fetch-secrets.ts",
     // Production start
     "start": "deno run --permission-set src/main.ts",
     // Run unit tests only
