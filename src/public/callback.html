@@ -24,7 +24,7 @@
     <script>
       const supabaseUrl = "{{SUPABASE_URL}}";
       const supabaseKey = "{{SUPABASE_KEY}}";
-      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
       const searchParams = new URLSearchParams(window.location.search);
       const returnUrl = searchParams.get("returnUrl") || "";
@@ -37,7 +37,7 @@
         const errorUrl = "/error?code=" + errorCode + (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
         window.location.href = errorUrl;
       } else {
-        supabase.auth.getSession().then(({ data, error }) => {
+        supabaseClient.auth.getSession().then(({ data, error }) => {
           if (error || !data.session) {
             const errorUrl = "/error?code=auth_failed" + (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
             window.location.href = errorUrl;
