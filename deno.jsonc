@@ -14,10 +14,10 @@
   "tasks": {
     // Type-check without running
     "check": "deno check src/**/*.ts",
-    // Apply schema changes to database (requires DATABASE_URL env var with ?search_path=login)
-    "db:apply": "atlas schema apply --url \"$DATABASE_URL\" --to file://db/schema.hcl --dev-url 'docker://postgres/15/dev?search_path=public'",
+    // Apply schema changes to database (requires DATABASE_URL env var)
+    "db:apply": "atlas schema apply --url \"$DATABASE_URL\" --to file://db/schema.hcl --dev-url 'docker://postgres/15/dev?search_path=public' --schema login",
     // Show planned schema changes without applying
-    "db:diff": "atlas schema diff --from \"$DATABASE_URL\" --to file://db/schema.hcl --dev-url 'docker://postgres/15/dev?search_path=public'",
+    "db:diff": "atlas schema diff --from \"$DATABASE_URL\" --to file://db/schema.hcl --dev-url 'docker://postgres/15/dev?search_path=public' --schema login",
     // Development with hot reload
     "dev": "deno run --permission-set --watch src/main.ts",
     // Format all files
