@@ -1,6 +1,6 @@
 // Login route handlers
-import { Context } from "hono";
 import { verify } from "djwt";
+import { Context } from "hono";
 import {
   clearSessionCookie,
   getSessionCookie,
@@ -9,7 +9,7 @@ import {
 import { upsertDomainLogin } from "./db/index.ts";
 import { SupportedDomain, getRootDomain } from "./domain.ts";
 import { getSupabaseUrl } from "./supabase.ts";
-import { renderTemplate, escapeHtml, jsValue } from "./templates.ts";
+import { escapeHtml, jsValue, renderTemplate } from "./templates.ts";
 
 // Cached CryptoKey for JWT verification
 let jwtKey: CryptoKey | null = null;
@@ -31,9 +31,9 @@ interface JWK {
  */
 async function getJwtKey(): Promise<CryptoKey | null> {
   const now = Date.now();
-  
+
   // Return cached key if still valid
-  if (jwtKey && (now - jwtKeyFetchedAt) < KEY_CACHE_TTL) {
+  if (jwtKey && now - jwtKeyFetchedAt < KEY_CACHE_TTL) {
     return jwtKey;
   }
 
@@ -47,14 +47,14 @@ async function getJwtKey(): Promise<CryptoKey | null> {
     // Fetch JWKS from Supabase
     const jwksUrl = `${supabaseUrl.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
     const response = await fetch(jwksUrl);
-    
+
     if (!response.ok) {
       console.warn(`Failed to fetch JWKS: ${response.status}`);
       return null;
     }
 
-    const jwks = await response.json() as { keys: JWK[] };
-    
+    const jwks = (await response.json()) as { keys: JWK[] };
+
     if (!jwks.keys || jwks.keys.length === 0) {
       console.warn("No keys found in JWKS");
       return null;
@@ -75,10 +75,10 @@ async function getJwtKey(): Promise<CryptoKey | null> {
       false,
       ["verify"],
     );
-    
+
     jwtKeyFetchedAt = now;
     console.log("JWT key fetched from JWKS");
-    
+
     return jwtKey;
   } catch (err) {
     console.warn("Failed to fetch JWKS:", err);
@@ -102,11 +102,11 @@ async function verifyJwt(token: string): Promise<boolean> {
 
     // Verify signature and decode
     const payload = await verify(token, key);
-    
+
     // Check expiration with 1 minute tolerance
     const exp = payload.exp as number;
     if (!exp) return false;
-    
+
     const now = Math.floor(Date.now() / 1000);
     return exp + 60 > now;
   } catch {
@@ -148,15 +148,15 @@ export function isValidReturnUrl(
  * Used to extract user ID and check expiration after Supabase has already validated the token.
  * Exported for testing.
  */
-export function decodeJwtPayload(token: string): { sub?: string; exp?: number } | null {
+export function decodeJwtPayload(
+  token: string,
+): { sub?: string; exp?: number } | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
 
     // Base64url decode the payload
-    const payload = parts[1]
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = atob(payload);
     return JSON.parse(decoded);
   } catch {
@@ -175,7 +175,7 @@ export async function handleLogin(c: Context) {
   if (existingSession) {
     // Verify JWT signature and expiration before redirecting
     const isValid = await verifyJwt(existingSession);
-    
+
     if (isValid) {
       // Valid session, redirect to return URL or domain root
       const returnUrl = c.req.query("returnUrl");
@@ -184,7 +184,7 @@ export async function handleLogin(c: Context) {
       }
       return c.redirect(`https://${domain}/`);
     }
-    
+
     // Invalid or expired session - clear the cookie
     clearSessionCookie(c);
   }
@@ -281,7 +281,8 @@ const ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   },
   access_denied: {
     title: "Access Denied",
-    message: "You denied access to your account. Sign in is required to continue.",
+    message:
+      "You denied access to your account. Sign in is required to continue.",
   },
   cancelled: {
     title: "Sign In Cancelled",
@@ -289,7 +290,8 @@ const ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
   },
   network_error: {
     title: "Connection Error",
-    message: "We couldn't connect to the authentication service. Please check your connection and try again.",
+    message:
+      "We couldn't connect to the authentication service. Please check your connection and try again.",
   },
   invalid_request: {
     title: "Invalid Request",
@@ -314,9 +316,10 @@ export async function handleError(c: Context) {
   const returnUrl = c.req.query("returnUrl");
 
   const errorInfo = ERROR_MESSAGES[errorCode] || ERROR_MESSAGES.default;
-  const returnUrlParam = returnUrl && isValidReturnUrl(returnUrl, domain)
-    ? `?returnUrl=${encodeURIComponent(returnUrl)}`
-    : "";
+  const returnUrlParam =
+    returnUrl && isValidReturnUrl(returnUrl, domain)
+      ? `?returnUrl=${encodeURIComponent(returnUrl)}`
+      : "";
 
   const html = await renderTemplate("error.html", {
     DOMAIN: domain,
