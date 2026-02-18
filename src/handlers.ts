@@ -1,5 +1,6 @@
 // Login route handlers
 import { Context } from "hono";
+import { verify } from "djwt";
 import {
   clearSessionCookie,
   getSessionCookie,
@@ -9,6 +10,62 @@ import { upsertDomainLogin } from "./db/index.ts";
 import { SupportedDomain, getRootDomain } from "./domain.ts";
 import { getSupabaseUrl } from "./supabase.ts";
 import { renderTemplate, escapeHtml, jsValue } from "./templates.ts";
+
+// Cached CryptoKey for JWT verification
+let jwtKey: CryptoKey | null = null;
+
+/**
+ * Get or create the CryptoKey for JWT verification.
+ * Uses HS256 (HMAC-SHA256) as Supabase JWTs use this algorithm.
+ */
+async function getJwtKey(): Promise<CryptoKey | null> {
+  if (jwtKey) return jwtKey;
+
+  const secret = Deno.env.get("SUPABASE_JWT_KEY");
+  if (!secret) {
+    console.warn("SUPABASE_JWT_KEY not set - JWT verification disabled");
+    return null;
+  }
+
+  const encoder = new TextEncoder();
+  jwtKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+
+  return jwtKey;
+}
+
+/**
+ * Verify JWT signature and check expiration.
+ * Returns true if the token is valid, false otherwise.
+ */
+async function verifyJwt(token: string): Promise<boolean> {
+  try {
+    const key = await getJwtKey();
+    if (!key) {
+      // Fallback: if no JWT key, just check expiration
+      const payload = decodeJwtPayload(token);
+      if (!payload?.exp) return false;
+      return payload.exp > Math.floor(Date.now() / 1000);
+    }
+
+    // Verify signature and decode
+    const payload = await verify(token, key);
+    
+    // Check expiration with 1 minute tolerance
+    const exp = payload.exp as number;
+    if (!exp) return false;
+    
+    const now = Math.floor(Date.now() / 1000);
+    return exp + 60 > now;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Validate a return URL to prevent open redirects.
@@ -69,11 +126,10 @@ export async function handleLogin(c: Context) {
   // Check if user is already logged in with a valid session
   const existingSession = getSessionCookie(c);
   if (existingSession) {
-    // Validate JWT expiration before redirecting
-    const payload = decodeJwtPayload(existingSession);
-    const now = Math.floor(Date.now() / 1000);
+    // Verify JWT signature and expiration before redirecting
+    const isValid = await verifyJwt(existingSession);
     
-    if (payload?.exp && payload.exp > now) {
+    if (isValid) {
       // Valid session, redirect to return URL or domain root
       const returnUrl = c.req.query("returnUrl");
       if (returnUrl && isValidReturnUrl(returnUrl, domain)) {
