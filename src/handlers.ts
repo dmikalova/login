@@ -41,10 +41,10 @@ export function isValidReturnUrl(
 
 /**
  * Decode JWT payload without verification.
- * Used to extract user ID after Supabase has already validated the token.
+ * Used to extract user ID and check expiration after Supabase has already validated the token.
  * Exported for testing.
  */
-export function decodeJwtPayload(token: string): { sub?: string } | null {
+export function decodeJwtPayload(token: string): { sub?: string; exp?: number } | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
@@ -66,15 +66,24 @@ export function decodeJwtPayload(token: string): { sub?: string } | null {
 export async function handleLogin(c: Context) {
   const domain = c.get("domain") as SupportedDomain;
 
-  // Check if user is already logged in
+  // Check if user is already logged in with a valid session
   const existingSession = getSessionCookie(c);
   if (existingSession) {
-    // TODO: Validate JWT before redirecting
-    const returnUrl = c.req.query("returnUrl");
-    if (returnUrl && isValidReturnUrl(returnUrl, domain)) {
-      return c.redirect(returnUrl);
+    // Validate JWT expiration before redirecting
+    const payload = decodeJwtPayload(existingSession);
+    const now = Math.floor(Date.now() / 1000);
+    
+    if (payload?.exp && payload.exp > now) {
+      // Valid session, redirect to return URL or domain root
+      const returnUrl = c.req.query("returnUrl");
+      if (returnUrl && isValidReturnUrl(returnUrl, domain)) {
+        return c.redirect(returnUrl);
+      }
+      return c.redirect(`https://${domain}/`);
     }
-    return c.redirect(`https://${domain}/`);
+    
+    // Invalid or expired session - clear the cookie
+    clearSessionCookie(c);
   }
 
   // Get configuration from environment
