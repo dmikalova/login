@@ -25,14 +25,17 @@ curl -sSf https://atlasgo.sh | sh
 The database schema is defined in `db/schema.hcl`. To view or apply changes:
 
 ```bash
-# View what would change
-DATABASE_URL="postgres://..." deno task db:diff
+# View what would change (fetches DATABASE_URL from Secret Manager)
+deno task db:diff
 
 # Apply schema changes
-DATABASE_URL="postgres://..." deno task db:apply
+deno task db:apply
+
+# Or provide DATABASE_URL explicitly
+DATABASE_URL="postgres://..." deno task db:diff
 ```
 
-The tasks use `--schema login` to limit Atlas to the app's schema, avoiding conflicts with Supabase system tables.
+The wrapper script uses `--schema login` to limit Atlas to the app's schema, avoiding conflicts with Supabase system tables.
 
 ### Running Locally
 
