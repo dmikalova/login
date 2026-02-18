@@ -13,30 +13,77 @@ import { renderTemplate, escapeHtml, jsValue } from "./templates.ts";
 
 // Cached CryptoKey for JWT verification
 let jwtKey: CryptoKey | null = null;
+let jwtKeyFetchedAt: number = 0;
+const KEY_CACHE_TTL = 3600 * 1000; // 1 hour cache
+
+interface JWK {
+  kty: string;
+  crv: string;
+  x: string;
+  y: string;
+  kid: string;
+  alg: string;
+}
 
 /**
- * Get or create the CryptoKey for JWT verification.
- * Uses HS256 (HMAC-SHA256) as Supabase JWTs use this algorithm.
+ * Fetch the JWKS from Supabase and import the ES256 public key.
+ * Caches the key for 1 hour to handle key rotation.
  */
 async function getJwtKey(): Promise<CryptoKey | null> {
-  if (jwtKey) return jwtKey;
+  const now = Date.now();
+  
+  // Return cached key if still valid
+  if (jwtKey && (now - jwtKeyFetchedAt) < KEY_CACHE_TTL) {
+    return jwtKey;
+  }
 
-  const secret = Deno.env.get("SUPABASE_JWT_KEY");
-  if (!secret) {
-    console.warn("SUPABASE_JWT_KEY not set - JWT verification disabled");
+  const supabaseUrl = getSupabaseUrl();
+  if (!supabaseUrl) {
+    console.warn("SUPABASE_URL not set - JWT verification disabled");
     return null;
   }
 
-  const encoder = new TextEncoder();
-  jwtKey = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign", "verify"],
-  );
+  try {
+    // Fetch JWKS from Supabase
+    const jwksUrl = `${supabaseUrl.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+    const response = await fetch(jwksUrl);
+    
+    if (!response.ok) {
+      console.warn(`Failed to fetch JWKS: ${response.status}`);
+      return null;
+    }
 
-  return jwtKey;
+    const jwks = await response.json() as { keys: JWK[] };
+    
+    if (!jwks.keys || jwks.keys.length === 0) {
+      console.warn("No keys found in JWKS");
+      return null;
+    }
+
+    // Use the first ES256 key
+    const jwk = jwks.keys.find((k: JWK) => k.alg === "ES256");
+    if (!jwk) {
+      console.warn("No ES256 key found in JWKS");
+      return null;
+    }
+
+    // Import the JWK as a CryptoKey
+    jwtKey = await crypto.subtle.importKey(
+      "jwk",
+      jwk,
+      { name: "ECDSA", namedCurve: "P-256" },
+      false,
+      ["verify"],
+    );
+    
+    jwtKeyFetchedAt = now;
+    console.log("JWT key fetched from JWKS");
+    
+    return jwtKey;
+  } catch (err) {
+    console.warn("Failed to fetch JWKS:", err);
+    return null;
+  }
 }
 
 /**
