@@ -9,7 +9,7 @@ import {
 import { upsertDomainLogin } from "./db/index.ts";
 import { getRootDomain, SupportedDomain } from "./domain.ts";
 import { getSupabaseUrl } from "./supabase.ts";
-import { escapeHtml, jsValue, renderTemplate } from "./templates.ts";
+import { escapeHtml, renderTemplate } from "./templates.ts";
 
 // Cached CryptoKey for JWT verification
 let jwtKey: CryptoKey | null = null;
