@@ -56,10 +56,9 @@ async function runAtlas(
   command: "apply" | "diff",
   databaseUrl: string,
 ): Promise<void> {
-  const baseArgs =
-    command === "apply"
-      ? ["schema", "apply", "--url", databaseUrl]
-      : ["schema", "diff", "--from", databaseUrl];
+  const baseArgs = command === "apply"
+    ? ["schema", "apply", "--url", databaseUrl]
+    : ["schema", "diff", "--from", databaseUrl];
 
   const args = [
     ...baseArgs,

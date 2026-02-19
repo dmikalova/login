@@ -7,7 +7,7 @@ import {
   setSessionCookie,
 } from "./cookie.ts";
 import { upsertDomainLogin } from "./db/index.ts";
-import { SupportedDomain, getRootDomain } from "./domain.ts";
+import { getRootDomain, SupportedDomain } from "./domain.ts";
 import { getSupabaseUrl } from "./supabase.ts";
 import { escapeHtml, jsValue, renderTemplate } from "./templates.ts";
 
@@ -45,7 +45,9 @@ async function getJwtKey(): Promise<CryptoKey | null> {
 
   try {
     // Fetch JWKS from Supabase
-    const jwksUrl = `${supabaseUrl.replace(/\/$/, "")}/auth/v1/.well-known/jwks.json`;
+    const jwksUrl = `${
+      supabaseUrl.replace(/\/$/, "")
+    }/auth/v1/.well-known/jwks.json`;
     const response = await fetch(jwksUrl);
 
     if (!response.ok) {
@@ -200,8 +202,9 @@ export async function handleLogin(c: Context) {
 
   // Parse and validate returnUrl
   const returnUrl = c.req.query("returnUrl");
-  const validatedReturnUrl =
-    returnUrl && isValidReturnUrl(returnUrl, domain) ? returnUrl : null;
+  const validatedReturnUrl = returnUrl && isValidReturnUrl(returnUrl, domain)
+    ? returnUrl
+    : null;
 
   const error = c.req.query("error");
 
@@ -316,10 +319,9 @@ export async function handleError(c: Context) {
   const returnUrl = c.req.query("returnUrl");
 
   const errorInfo = ERROR_MESSAGES[errorCode] || ERROR_MESSAGES.default;
-  const returnUrlParam =
-    returnUrl && isValidReturnUrl(returnUrl, domain)
-      ? `?returnUrl=${encodeURIComponent(returnUrl)}`
-      : "";
+  const returnUrlParam = returnUrl && isValidReturnUrl(returnUrl, domain)
+    ? `?returnUrl=${encodeURIComponent(returnUrl)}`
+    : "";
 
   const html = await renderTemplate("error.html", {
     DOMAIN: domain,

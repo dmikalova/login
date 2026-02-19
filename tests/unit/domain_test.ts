@@ -2,11 +2,11 @@
 
 import { assertEquals } from "@std/assert";
 import {
-  SUPPORTED_DOMAINS,
   getCookieDomain,
   getRootDomain,
   isSupportedDomain,
   parseDomainFromHost,
+  SUPPORTED_DOMAINS,
 } from "../../src/domain.ts";
 
 // SUPPORTED_DOMAINS tests

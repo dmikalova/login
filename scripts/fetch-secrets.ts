@@ -60,7 +60,9 @@ async function main() {
 
   const { success } = await checkCmd.output();
   if (!success) {
-    console.error("# Error: gcloud CLI not found. Install from https://cloud.google.com/sdk");
+    console.error(
+      "# Error: gcloud CLI not found. Install from https://cloud.google.com/sdk",
+    );
     Deno.exit(1);
   }
 

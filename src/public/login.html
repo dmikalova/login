@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -77,12 +77,14 @@
               r="10"
               stroke="currentColor"
               stroke-width="4"
-            ></circle>
+            >
+            </circle>
             <path
               class="opacity-75"
               fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
+            >
+            </path>
           </svg>
           <p class="mt-4 text-gray-500">Signing you in...</p>
         </div>
@@ -140,8 +142,8 @@
       // Server-injected configuration
       const CONFIG = {
         domain: "{{DOMAIN}}",
-        error: {{ERROR}},
-        returnUrl: {{RETURN_URL}},
+        error: "{{ERROR}}",
+        returnUrl: "{{RETURN_URL}}",
         googleClientId: "{{GOOGLE_CLIENT_ID}}",
         supabaseUrl: "{{SUPABASE_URL}}",
         supabaseKey: "{{SUPABASE_KEY}}",
@@ -158,12 +160,15 @@
 
           const supabase = window.supabase.createClient(
             CONFIG.supabaseUrl,
-            CONFIG.supabaseKey
+            CONFIG.supabaseKey,
           );
 
           // Build error redirect URL
           const getErrorUrl = (code) => {
-            return "/error?code=" + code + (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
+            return "/error?code=" + code +
+              (returnUrl
+                ? "&returnUrl=" + encodeURIComponent(returnUrl)
+                : "");
           };
 
           // Handle One Tap credential response
@@ -172,19 +177,19 @@
             error.value = null;
 
             try {
-              const { data, err } = await supabase.auth.signInWithIdToken({
-                provider: "google",
-                token: response.credential,
-              });
+              const { data, err } = await supabase.auth
+                .signInWithIdToken({
+                  provider: "google",
+                  token: response.credential,
+                });
 
               if (err) throw err;
 
-              const callbackUrl =
-                "/callback?token=" +
+              const callbackUrl = "/callback?token=" +
                 encodeURIComponent(data.session.access_token);
               if (returnUrl) {
-                window.location.href =
-                  callbackUrl + "&returnUrl=" + encodeURIComponent(returnUrl);
+                window.location.href = callbackUrl + "&returnUrl=" +
+                  encodeURIComponent(returnUrl);
               } else {
                 window.location.href = callbackUrl;
               }
@@ -212,7 +217,7 @@
                   console.log(
                     "One Tap not displayed:",
                     notification.getNotDisplayedReason?.() ||
-                      notification.getSkippedReason?.()
+                      notification.getSkippedReason?.(),
                   );
                 }
               });
@@ -227,10 +232,11 @@
             loading.value = true;
             error.value = null;
 
-            const redirectTo =
-              window.location.origin +
+            const redirectTo = window.location.origin +
               "/callback" +
-              (returnUrl ? "?returnUrl=" + encodeURIComponent(returnUrl) : "");
+              (returnUrl
+                ? "?returnUrl=" + encodeURIComponent(returnUrl)
+                : "");
 
             const { error: err } = await supabase.auth.signInWithOAuth({
               provider: "google",

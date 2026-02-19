@@ -35,7 +35,8 @@ deno task db:apply
 DATABASE_URL="postgres://..." deno task db:diff
 ```
 
-The wrapper script uses `--schema login` to limit Atlas to the app's schema, avoiding conflicts with Supabase system tables.
+The wrapper script uses `--schema login` to limit Atlas to the app's schema,
+avoiding conflicts with Supabase system tables.
 
 ### Running Locally
 

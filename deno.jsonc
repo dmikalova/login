@@ -8,7 +8,7 @@
     "@supabase/supabase-js": "npm:@supabase/supabase-js@^2",
     "djwt": "jsr:@zaubrik/djwt@^3",
     "hono": "npm:hono@^4",
-    "postgres": "npm:postgres@^3",
+    "postgres": "npm:postgres@^3"
   },
 
   // Available tasks: deno task <name>
@@ -27,6 +27,8 @@
     "lint": "deno lint",
     // Fetch secrets from Google Secret Manager (use with eval)
     "secrets": "deno run --allow-run --allow-env scripts/fetch-secrets.ts",
+    // Install git hooks (run once after clone)
+    "setup": "lefthook install",
     // Production start
     "start": "deno run --permission-set src/main.ts",
     // Run unit tests only
@@ -34,7 +36,7 @@
     // Run all tests
     "test:all": "deno test --permission-set tests/",
     // Run tests with coverage report
-    "test:coverage": "deno test --permission-set --coverage=coverage tests/unit/",
+    "test:coverage": "deno test --permission-set --coverage=coverage tests/unit/"
   },
 
   // Default permissions for tasks
@@ -42,27 +44,19 @@
     "default": {
       "env": true,
       "net": true,
-      "read": true,
-    },
+      "read": true
+    }
   },
 
   // Compiler options
   "compilerOptions": {
-    "strict": true,
-  },
-
-  // Format options
-  "fmt": {
-    "indentWidth": 2,
-    "lineWidth": 100,
-    "semiColons": true,
-    "singleQuote": false,
+    "strict": true
   },
 
   // Lint options
   "lint": {
     "rules": {
-      "tags": ["recommended"],
-    },
-  },
+      "tags": ["recommended"]
+    }
+  }
 }
