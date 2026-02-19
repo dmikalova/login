@@ -142,8 +142,8 @@
       // Server-injected configuration
       const CONFIG = {
         domain: "{{DOMAIN}}",
-        error: "{{ERROR}}",
-        returnUrl: "{{RETURN_URL}}",
+        error: "{{ERROR}}" || null,
+        returnUrl: "{{RETURN_URL}}" || null,
         googleClientId: "{{GOOGLE_CLIENT_ID}}",
         supabaseUrl: "{{SUPABASE_URL}}",
         supabaseKey: "{{SUPABASE_KEY}}",

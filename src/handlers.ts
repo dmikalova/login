@@ -210,8 +210,8 @@ export async function handleLogin(c: Context) {
 
   const html = await renderTemplate("login.html", {
     DOMAIN: domain,
-    ERROR: error ? jsValue(escapeHtml(error)) : "null",
-    RETURN_URL: jsValue(validatedReturnUrl),
+    ERROR: error ? escapeHtml(error) : "",
+    RETURN_URL: validatedReturnUrl || "",
     GOOGLE_CLIENT_ID: googleClientId,
     SUPABASE_URL: supabaseUrl,
     SUPABASE_KEY: supabaseKey,
