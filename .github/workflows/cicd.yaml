@@ -1,5 +1,3 @@
-# CI/CD Pipeline
-
 name: CI/CD
 
 on:
@@ -10,7 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  pipeline:
+  cicd:
+    name: CI/CD
     uses: dmikalova/github-meta/.github/workflows/deno-cloudrun.yaml@main
     permissions:
       contents: write
