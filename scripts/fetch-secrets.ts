@@ -18,7 +18,8 @@ const SECRETS: Record<string, string> = {
   SUPABASE_URL: "supabase-mklv-url",
   SUPABASE_PUBLISHABLE_KEY: "supabase-mklv-publishable-key",
   GOOGLE_CLIENT_ID: "login-google-client-id",
-  // DATABASE_URL: "login-database-url", // Uncomment if you need local DB access
+  // DATABASE_URL_TRANSACTION: "login-database-url-transaction", // Uncomment for local DB access (app runtime)
+  // DATABASE_URL_SESSION: "login-database-url-session", // Uncomment for migrations
 };
 
 async function getSecret(secretName: string): Promise<string | null> {

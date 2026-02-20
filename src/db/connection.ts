@@ -15,9 +15,9 @@ export function getConnection(): postgres.Sql {
     return sql;
   }
 
-  const url = Deno.env.get("DATABASE_URL");
+  const url = Deno.env.get("DATABASE_URL_TRANSACTION");
   if (!url) {
-    throw new Error("DATABASE_URL environment variable is required");
+    throw new Error("DATABASE_URL_TRANSACTION environment variable is required");
   }
 
   const schema = Deno.env.get("DATABASE_SCHEMA") || "login";

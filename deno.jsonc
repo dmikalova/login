@@ -15,7 +15,7 @@
   "tasks": {
     // Type-check without running
     "check": "deno check src/**/*.ts",
-    // Apply schema changes to database (fetches DATABASE_URL from Secret Manager)
+    // Apply schema changes to database (fetches DATABASE_URL_SESSION from Secret Manager)
     "db:apply": "deno run --allow-run --allow-env scripts/db.ts apply",
     // Show planned schema changes without applying
     "db:diff": "deno run --allow-run --allow-env scripts/db.ts diff",

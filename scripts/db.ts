@@ -7,7 +7,7 @@
  *   deno task db:apply  # Apply schema changes
  *   deno task db:diff   # Show planned changes
  *
- * Automatically fetches DATABASE_URL from Google Secret Manager.
+ * Automatically fetches DATABASE_URL_SESSION from Google Secret Manager.
  *
  * Prerequisites:
  *   - Atlas CLI installed (brew install ariga/tap/atlas)
@@ -16,18 +16,18 @@
  */
 
 const PROJECT_ID = "mklv-infrastructure";
-const SECRET_NAME = "login-database-url";
+const SECRET_NAME = "login-database-url-session";
 const SCHEMA_NAME = "login";
 
 async function getDatabaseUrl(): Promise<string> {
   // Check for override from environment
-  const envUrl = Deno.env.get("DATABASE_URL");
+  const envUrl = Deno.env.get("DATABASE_URL_SESSION");
   if (envUrl) {
-    console.error("Using DATABASE_URL from environment");
+    console.error("Using DATABASE_URL_SESSION from environment");
     return envUrl;
   }
 
-  console.error("Fetching DATABASE_URL from Secret Manager...");
+  console.error("Fetching DATABASE_URL_SESSION from Secret Manager...");
   const cmd = new Deno.Command("gcloud", {
     args: [
       "secrets",
