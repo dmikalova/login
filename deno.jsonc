@@ -1,6 +1,6 @@
 {
   "name": "@login/app",
-  "exports": "./src/main.ts",
+  "exports": "./api/main.ts",
 
   // Import map for npm packages and external dependencies
   "imports": {
@@ -8,19 +8,21 @@
     "@supabase/supabase-js": "npm:@supabase/supabase-js@^2",
     "djwt": "jsr:@zaubrik/djwt@^3",
     "hono": "npm:hono@^4",
-    "postgres": "npm:postgres@^3"
+    "postgres": "npm:postgres@^3",
   },
 
   // Available tasks: deno task <name>
   "tasks": {
+    // Development with hot reload
+    "api:dev": "deno run --permission-set --watch api/main.ts",
+    // Production start
+    "api:start": "deno run --permission-set api/main.ts",
     // Type-check without running
-    "check": "deno check src/**/*.ts",
+    "check": "deno check api/**/*.ts",
     // Apply schema changes to database (fetches DATABASE_URL_SESSION from Secret Manager)
     "db:apply": "deno run --allow-run --allow-env scripts/db.ts apply",
     // Show planned schema changes without applying
     "db:diff": "deno run --allow-run --allow-env scripts/db.ts diff",
-    // Development with hot reload
-    "dev": "deno run --permission-set --watch src/main.ts",
     // Format all files
     "fmt": "deno fmt",
     // Lint TypeScript files
@@ -29,14 +31,12 @@
     "secrets": "deno run --allow-run --allow-env scripts/fetch-secrets.ts",
     // Install git hooks (run once after clone)
     "setup": "lefthook install",
-    // Production start
-    "start": "deno run --permission-set src/main.ts",
     // Run unit tests only
     "test": "deno test --permission-set tests/unit/",
     // Run all tests
     "test:all": "deno test --permission-set tests/",
     // Run tests with coverage report
-    "test:coverage": "deno test --permission-set --coverage=coverage tests/unit/"
+    "test:coverage": "deno test --permission-set --coverage=coverage tests/unit/",
   },
 
   // Default permissions for tasks
@@ -44,19 +44,19 @@
     "default": {
       "env": true,
       "net": true,
-      "read": true
-    }
+      "read": true,
+    },
   },
 
   // Compiler options
   "compilerOptions": {
-    "strict": true
+    "strict": true,
   },
 
   // Lint options
   "lint": {
     "rules": {
-      "tags": ["recommended"]
-    }
-  }
+      "tags": ["recommended"],
+    },
+  },
 }

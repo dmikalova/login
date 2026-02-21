@@ -1,7 +1,7 @@
 // Unit tests for health endpoint
 
 import { assertEquals } from "@std/assert";
-import { app } from "../../src/app.ts";
+import { app } from "../../api/app.ts";
 
 Deno.test("GET /health - returns 200 OK", async () => {
   const res = await app.request("/health");
