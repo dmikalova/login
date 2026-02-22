@@ -6,10 +6,10 @@
  * Supported domain families. Each family shares authentication cookies.
  */
 export const SUPPORTED_DOMAINS = [
-  "mklv.tech",
+  "cddc39.tech",
+  "dmikalova.dev",
   "keyforge.cards",
-  // "cddc39.tech", // Pending infrastructure setup
-  // "dmikalova.dev", // Pending infrastructure setup
+  "mklv.tech",
 ] as const;
 
 export type SupportedDomain = (typeof SUPPORTED_DOMAINS)[number];

@@ -1,7 +1,7 @@
 // Unit tests for template utilities
 
 import { assertEquals } from "@std/assert";
-import { escapeHtml, jsValue } from "../../api/templates.ts";
+import { escapeHtml, jsValue } from "../../src/templates.ts";
 
 // escapeHtml tests
 

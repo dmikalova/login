@@ -1,7 +1,7 @@
 // Unit tests for URL validation and JWT decoding
 
 import { assertEquals } from "@std/assert";
-import { decodeJwtPayload, isValidReturnUrl } from "../../api/handlers.ts";
+import { decodeJwtPayload, isValidReturnUrl } from "../../src/handlers.ts";
 
 // isValidReturnUrl tests
 

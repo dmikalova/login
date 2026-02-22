@@ -7,7 +7,7 @@ import {
   isSupportedDomain,
   parseDomainFromHost,
   SUPPORTED_DOMAINS,
-} from "../../api/domain.ts";
+} from "../../src/domain.ts";
 
 // SUPPORTED_DOMAINS tests
 
