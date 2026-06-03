@@ -166,9 +166,7 @@
           // Build error redirect URL
           const getErrorUrl = (code) => {
             return "/error?code=" + code +
-              (returnUrl
-                ? "&returnUrl=" + encodeURIComponent(returnUrl)
-                : "");
+              (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
           };
 
           // Handle One Tap credential response
@@ -234,9 +232,7 @@
 
             const redirectTo = window.location.origin +
               "/callback" +
-              (returnUrl
-                ? "?returnUrl=" + encodeURIComponent(returnUrl)
-                : "");
+              (returnUrl ? "?returnUrl=" + encodeURIComponent(returnUrl) : "");
 
             const { error: err } = await supabase.auth.signInWithOAuth({
               provider: "google",

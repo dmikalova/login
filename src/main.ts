@@ -1,4 +1,5 @@
 // Main entry point for login service
+import "./secrets.ts";
 import { app } from "./app.ts";
 
 const port = parseInt(Deno.env.get("PORT") || "8080");

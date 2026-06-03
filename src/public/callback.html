@@ -40,17 +40,13 @@
           ? "access_denied"
           : "auth_failed";
         const errorUrl = "/error?code=" + errorCode +
-          (returnUrl
-            ? "&returnUrl=" + encodeURIComponent(returnUrl)
-            : "");
+          (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
         window.location.href = errorUrl;
       } else {
         supabaseClient.auth.getSession().then(({ data, error }) => {
           if (error || !data.session) {
             const errorUrl = "/error?code=auth_failed" +
-              (returnUrl
-                ? "&returnUrl=" + encodeURIComponent(returnUrl)
-                : "");
+              (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
             window.location.href = errorUrl;
             return;
           }
